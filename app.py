@@ -1,52 +1,68 @@
-Python 3.12.3 (tags/v3.12.3:f6650f9, Apr  9 2024, 14:05:25) [MSC v.1938 64 bit (AMD64)] on win32
-Type "help", "copyright", "credits" or "license()" for more information.
 import streamlit as st
+import random
 
-# 🎵 예시 음악 데이터
-TRACKS = [
-    {
-        "title": "Lo-Fi Rain Window",
-        "artist": "Chillhop Collective",
-        "mood": "우울",
-        "situation": "비 오는 날",
-        "place": "실내",
-        "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800"
-    },
-    {
-        "title": "Sunrise Bossa",
-...         "artist": "Nova Bossa",
-...         "mood": "기쁨",
-...         "situation": "아침 준비",
-...         "place": "해변",
-...         "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800"
-...     },
-...     {
-...         "title": "Midnight City Ride",
-...         "artist": "Synthwave Lane",
-...         "mood": "설렘",
-...         "situation": "밤 산책",
-...         "place": "도심",
-...         "image": "https://images.unsplash.com/photo-1491555103944-7c647fd857e6?q=80&w=800"
-...     },
-... ]
-... 
-... st.set_page_config(page_title="Mood Music Recommender", layout="wide")
-... st.title("🎵 감정·상황 기반 음악 추천")
-... 
-... # 1️⃣ 사용자 입력
-... mood = st.selectbox("지금 기분은?", ["우울", "기쁨", "설렘"])
-... situation = st.selectbox("상황은?", ["비 오는 날", "아침 준비", "밤 산책"])
-... place = st.selectbox("장소는?", ["실내", "해변", "도심"])
-... 
-... # 2️⃣ 추천 로직
-... def recommend_tracks(tracks, mood, situation, place):
-...     return [t for t in tracks if t["mood"]==mood and t["situation"]==situation and t["place"]==place]
-... 
-... recommended = recommend_tracks(TRACKS, mood, situation, place)
-... 
-... # 3️⃣ 결과 출력
-... if recommended:
-...     for t in recommended:
-...         st.subheader(f"{t['title']} - {t['artist']}")
-...         st.image(t["image"], use_column_width=True)
-... else:
+st.set_page_config(page_title="감정 + 장르 음악 추천", layout="wide")
+st.title("🎵 감정 + 장르 기반 음악 추천 웹사이트")
+
+# 1️⃣ 감정 선택
+mood = st.selectbox(
+    "지금 기분은 어떤가요?",
+    ["기쁨 😀", "슬픔 😢", "신남 🔥", "힐링 🌿"]
+)
+
+# 2️⃣ 장르 선택
+genre_options = {
+    "기쁨 😀": ["한국 힙합 🔥", "K-POP 댄스 💃"],
+    "슬픔 😢": ["한국 발라드 😢", "인디 🌿"],
+    "신남 🔥": ["한국 힙합 🔥", "K-POP 댄스 💃"],
+    "힐링 🌿": ["인디 🌿", "한국 발라드 😢"]
+}
+
+genre = st.selectbox("듣고 싶은 장르는?", genre_options[mood])
+
+# 3️⃣ 감정+장르 조합 추천 데이터 (리스트 여러 곡)
+music_data = {
+    ("기쁨 😀", "한국 힙합 🔥"): [
+        ("BE'O - Counting Stars", "https://www.youtube.com/watch?v=kk1hfVaxTCI", "https://picsum.photos/800/400?coffee"),
+        ("창모 - METEOR", "https://www.youtube.com/watch?v=J1Ov3jmH0gU", "https://picsum.photos/800/400?fire"),
+    ],
+    ("기쁨 😀", "K-POP 댄스 💃"): [
+        ("BLACKPINK - How You Like That", "https://www.youtube.com/watch?v=ioNng23DkIM", "https://picsum.photos/800/400?dance"),
+        ("IVE - I AM", "https://www.youtube.com/watch?v=6ZUIwj3FgUY", "https://picsum.photos/800/400?party"),
+    ],
+    ("슬픔 😢", "한국 발라드 😢"): [
+        ("폴킴 - 모든 날, 모든 순간", "https://www.youtube.com/watch?v=OGgn4x4RlHo", "https://picsum.photos/800/400?room"),
+        ("성시경 - 두 사람", "https://www.youtube.com/watch?v=2XBBfJxnNq0", "https://picsum.photos/800/400?relax"),
+    ],
+    ("슬픔 😢", "인디 🌿"): [
+        ("검정치마 - EVERYTHING", "https://www.youtube.com/watch?v=f05h1Jj4p8M", "https://picsum.photos/800/400?nature"),
+        ("장범준 - 흔들리는 꽃들 속에서", "https://www.youtube.com/watch?v=tLV83ndOw1A", "https://picsum.photos/800/400?nature"),
+    ],
+    ("신남 🔥", "한국 힙합 🔥"): [
+        ("창모 - METEOR", "https://www.youtube.com/watch?v=J1Ov3jmH0gU", "https://picsum.photos/800/400?fire"),
+        ("BE'O - Counting Stars", "https://www.youtube.com/watch?v=kk1hfVaxTCI", "https://picsum.photos/800/400?coffee"),
+    ],
+    ("신남 🔥", "K-POP 댄스 💃"): [
+        ("BLACKPINK - How You Like That", "https://www.youtube.com/watch?v=ioNng23DkIM", "https://picsum.photos/800/400?dance"),
+        ("IVE - I AM", "https://www.youtube.com/watch?v=6ZUIwj3FgUY", "https://picsum.photos/800/400?party"),
+    ],
+    ("힐링 🌿", "인디 🌿"): [
+        ("장범준 - 흔들리는 꽃들 속에서", "https://www.youtube.com/watch?v=tLV83ndOw1A", "https://picsum.photos/800/400?nature"),
+        ("검정치마 - EVERYTHING", "https://www.youtube.com/watch?v=f05h1Jj4p8M", "https://picsum.photos/800/400?nature"),
+    ],
+    ("힐링 🌿", "한국 발라드 😢"): [
+        ("성시경 - 두 사람", "https://www.youtube.com/watch?v=2XBBfJxnNq0", "https://picsum.photos/800/400?relax"),
+        ("폴킴 - 모든 날, 모든 순간", "https://www.youtube.com/watch?v=OGgn4x4RlHo", "https://picsum.photos/800/400?room"),
+    ],
+}
+
+# 4️⃣ 랜덤 추천 버튼
+if st.button("🎲 추천곡 바꾸기"):
+    recommendations = music_data.get((mood, genre), [])
+    if recommendations:
+        song, url, image_url = random.choice(recommendations)
+        st.subheader(f"추천: {song}")
+        st.image(image_url, use_column_width=True)
+        st.video(url)
+    else:
+        st.write("죄송해요 😢 추천 곡이 없습니다.")
